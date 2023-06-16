@@ -1,10 +1,11 @@
 import { Img, ModalView, Overlay } from './Modal.styled';
 
-function Modal() {
+function Modal({ urlImage, toggleModal }) {
+  document.body.style.overflow = 'hidden';
   return (
-    <Overlay>
+    <Overlay onClick={toggleModal}>
       <ModalView>
-        <Img src="" alt="" />
+        <Img src={urlImage} alt="" />
       </ModalView>
     </Overlay>
   );

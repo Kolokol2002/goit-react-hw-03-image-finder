@@ -7,9 +7,18 @@ import {
   InputSearch,
   IconButtonSearch,
 } from './Searchbar.styled';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Searchbar({ sendPhoto }) {
   const onSubmit = (data, tools) => {
+    if (data.search === '') {
+      toast.warn('Ви нічого не ввели!!!', {
+        autoClose: 2000,
+        theme: 'dark',
+      });
+      return;
+    }
     sendPhoto(data.search);
     tools.resetForm();
   };
