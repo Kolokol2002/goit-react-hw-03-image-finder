@@ -4,7 +4,7 @@ function ImageGalleryItem({ item }) {
   const { largeImageURL, webformatURL } = item;
   return (
     <GalleryItem>
-      <GalleryImg src={webformatURL} alt="" />
+      <GalleryImg data-large-img={largeImageURL} src={webformatURL} alt="" />
     </GalleryItem>
   );
 }
