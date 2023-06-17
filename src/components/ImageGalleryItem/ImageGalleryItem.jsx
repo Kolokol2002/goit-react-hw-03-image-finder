@@ -1,9 +1,9 @@
 import { GalleryImg, GalleryItem } from './ImageGalleryItem.styled';
 
-function ImageGalleryItem({ item, toggleModal }) {
+function ImageGalleryItem({ item, openModal }) {
   const { largeImageURL, webformatURL } = item;
   return (
-    <GalleryItem onClick={toggleModal}>
+    <GalleryItem onClick={openModal}>
       <GalleryImg data-large-img={largeImageURL} src={webformatURL} alt="" />
     </GalleryItem>
   );

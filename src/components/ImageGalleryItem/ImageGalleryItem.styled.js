@@ -9,12 +9,13 @@ export const GalleryItem = styled.li`
   transition-duration: 0.3s;
   box-shadow: 1px 11px 37px -3px rgba(0, 0, 0, 0.55);
 `;
+
 export const GalleryImg = styled.img`
   width: 100%;
   height: 200px;
   object-fit: cover;
   box-sizing: border-box;
-  cursor: pointer;
+  cursor: zoom-in;
   :hover {
     transform: scale(1.05);
   }

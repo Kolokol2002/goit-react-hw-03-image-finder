@@ -4,61 +4,57 @@ import ImageGallery from 'components/ImageGallery';
 import Loader from 'components/Loader';
 import Searchbar from 'components/Searchbar';
 import { Component } from 'react';
-
-// idle;
-// pending;
-// resolved;
-// rejected;
-
+const PER_PAGE = 20;
 class App extends Component {
   state = {
     image: [],
     text: '',
     page: 1,
-    per_page: 20,
-    // isVisible: false,
-    // loader: false,
     error: '',
     status: 'idle',
+    ref: null,
+    scrollTo: null,
   };
 
   componentDidUpdate(_, prevState) {
-    const { page, text, per_page } = this.state;
+    const { page, text, image, ref } = this.state;
+
+    if (prevState.image !== image && page !== 1) {
+      const elementToScroll =
+        ref.current.children[PER_PAGE * (prevState.page - 1)];
+
+      elementToScroll.scrollIntoView({
+        behavior: 'smooth',
+      });
+    }
 
     if (prevState.page !== page && page !== 1) {
       this.setState({ status: 'pending' });
 
-      getPhoto(text, page, per_page)
+      getPhoto(text, page, PER_PAGE)
         .then(({ data: { hits } }) => {
-          const status = hits.length < per_page ? 'idle' : 'resolved';
+          const status = hits.length < PER_PAGE ? 'idle' : 'resolved';
           this.setState({
             image: [...prevState.image, ...hits],
             status,
           });
-
-          setTimeout(() => {
-            window.scrollTo({
-              left: 0,
-              top: document.body.scrollHeight,
-              behavior: 'smooth',
-            });
-          }, 200);
         })
         .catch(error => this.setState({ error, status: 'rejected' }));
     }
   }
+  getRef = ref => {
+    this.setState({ ref });
+  };
 
   sendPhoto = text => {
-    const { per_page } = this.state;
-
     this.setState({ image: [], status: 'pending' });
 
-    getPhoto(text, 1, per_page)
+    getPhoto(text, 1, PER_PAGE)
       .then(({ data: { hits } }) => {
         if (hits.length === 0) {
           throw new Error('Картинок не знайдено');
         }
-        const status = hits.length < per_page ? 'idle' : 'resolved';
+        const status = hits.length < PER_PAGE ? 'idle' : 'resolved';
         this.setState({ image: hits, text, status });
       })
       .catch(({ message }) =>
@@ -74,12 +70,12 @@ class App extends Component {
 
   render() {
     const { image, status, error } = this.state;
+    const { sendPhoto, loadMore, getRef } = this;
 
-    const { sendPhoto, loadMore } = this;
     return (
       <>
         <Searchbar sendPhoto={sendPhoto} />
-        <ImageGallery image={image} />
+        <ImageGallery image={image} getRef={getRef} />
         {status === 'resolved' && <Button onClick={loadMore} />}
         {status === 'pending' && <Loader />}
         {status === 'rejected' && <h1>{error}</h1>}
