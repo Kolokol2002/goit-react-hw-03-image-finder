@@ -1,4 +1,4 @@
-import { getPhoto } from 'api/pixabayApi';
+import { getPhotoApi } from 'api/pixabayApi';
 import Button from 'components/Button';
 import ImageGallery from 'components/ImageGallery';
 import Loader from 'components/Loader';
@@ -19,7 +19,12 @@ class App extends Component {
   componentDidUpdate(_, prevState) {
     const { page, text, image, ref } = this.state;
 
-    if (prevState.image !== image && page !== 1) {
+    if (page === 1) {
+      return;
+    }
+
+    if (prevState.image !== image) {
+      // console.log(1, page);
       const elementToScroll =
         ref.current.children[PER_PAGE * (prevState.page - 1)];
 
@@ -28,10 +33,11 @@ class App extends Component {
       });
     }
 
-    if (prevState.page !== page && page !== 1) {
+    if (prevState.page !== page) {
+      // console.log(2, page);
       this.setState({ status: 'pending' });
 
-      getPhoto(text, page, PER_PAGE)
+      getPhotoApi(text, page, PER_PAGE)
         .then(({ data: { hits } }) => {
           const status = hits.length < PER_PAGE ? 'idle' : 'resolved';
           this.setState({
@@ -47,9 +53,9 @@ class App extends Component {
   };
 
   sendPhoto = text => {
-    this.setState({ image: [], status: 'pending' });
+    this.setState({ image: [], status: 'pending', page: 1 });
 
-    getPhoto(text, 1, PER_PAGE)
+    getPhotoApi(text, 1, PER_PAGE)
       .then(({ data: { hits } }) => {
         if (hits.length === 0) {
           throw new Error('Картинок не знайдено');
@@ -76,8 +82,8 @@ class App extends Component {
       <>
         <Searchbar sendPhoto={sendPhoto} />
         <ImageGallery image={image} getRef={getRef} />
-        {status === 'resolved' && <Button onClick={loadMore} />}
         {status === 'pending' && <Loader />}
+        {status === 'resolved' && <Button onClick={loadMore} />}
         {status === 'rejected' && <h1>{error}</h1>}
       </>
     );
